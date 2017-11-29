@@ -9,6 +9,7 @@ public class Prog {
 
 	public static void main(String[] args) {
 		MainHelper helper = new MainHelper();
+		PCB readyQueue[];
 		
 		/**
 		//Get argv from the console
@@ -24,6 +25,9 @@ public class Prog {
 		}
 		**/
 		
+		//temp command line simulator
+		String commandArgs[] = {"prog", "-alg", "FIFO", "-quantum", "3", "-input", "input.txt"};
+		
 		//read file
 		String fileContents[];
 		String line = null;
@@ -36,11 +40,12 @@ public class Prog {
 				helper.analyzeLine(fileContents);
 			}
 			buffReader.close();
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		
-		helper.printStats("prog", "FIFO");
+		helper.printStats(commandArgs[6], commandArgs[2]);
 	}
 
 }
