@@ -5,11 +5,17 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.Scanner;
 
-public class Prog {
+import ThreadClasses.ReadFile;
 
+
+
+public class Prog {
+	
 	public static void main(String[] args) {
+		
 		MainHelper helper = new MainHelper();
-		PCB readyQueue[];
+		DoubleLinkedList ioQueue = new DoubleLinkedList();
+		PCB readyQueue[] = null;
 		
 		/**
 		//Get argv from the console
@@ -19,7 +25,6 @@ public class Prog {
 		String params = scan.nextLine();
 		commandInput = params.split(" ");
 		
-
 		for(String param: commandInput){
 			System.out.println(param);
 		}
@@ -28,23 +33,24 @@ public class Prog {
 		//temp command line simulator
 		String commandArgs[] = {"prog", "-alg", "FIFO", "-quantum", "3", "-input", "input.txt"};
 		
-		//read file
-		String fileContents[];
-		String line = null;
+		
+		//read file in thread 1
+		ReadFile reader = new ReadFile(commandArgs[6], helper);
+		Thread t1 = new Thread(reader);
+		t1.start();
+		
+		//for(int i = 0; i < 100; i++)
+		//System.out.println((i+1) + "One-thousand");
+		
 		try {
-			
-			BufferedReader buffReader = new BufferedReader(new FileReader("input.txt"));
-			
-			while((line = buffReader.readLine()) != null){
-				fileContents = line.split(" +");
-				helper.analyzeLine(fileContents);
-			}
-			buffReader.close();
-			
-		} catch (Exception e) {
+			t1.join();
+		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
 		
+		//Update the ioQueue
+		ioQueue = helper.getList();
+
 		helper.printStats(commandArgs[6], commandArgs[2]);
 	}
 
