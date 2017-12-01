@@ -16,6 +16,7 @@ public class MainHelper {
 				fileName, alg);
 	}
 	
+	/**
 	//determines what type of line is in the file (proc/sleep/stop)
 	public void analyzeLine(String []line){
 		if(line[0].equals("proc")){
@@ -77,6 +78,7 @@ public class MainHelper {
 		}
 		return result;
 	}
+	**/
 	
 	//returns the list of the PCBs
 	public DoubleLinkedList getList(){

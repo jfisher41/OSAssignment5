@@ -1,15 +1,15 @@
 package os_assignment5;
 
 public class PCB {
-	int numCPUBurst;
-	int numIOBurst;
-	int cpuIndex;
-	int ioIndex;
-	int priority;
-	int CPUBurst[];
-	int IOBurst[];
-	PCB prev;
-	PCB next;
+	public int numCPUBurst;
+	public int numIOBurst;
+	public int cpuIndex;
+	public int ioIndex;
+	public int priority;
+	public int CPUBurst[];
+	public int IOBurst[];
+	public PCB prev;
+	public PCB next;
 	
 	
 	
