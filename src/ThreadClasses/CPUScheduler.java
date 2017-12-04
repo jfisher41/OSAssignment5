@@ -5,15 +5,20 @@ import os_assignment5.Prog;
 
 public class CPUScheduler extends Prog implements Runnable{
 	String alg;
+	PCB element;
 	
 	public CPUScheduler(){
+		
 		alg = arguments[2];
+		element = null;
 	}
 	
 	private void scheduler(){
 		while(true){
-			
-			if(readyQueue.isEmpty() && ioQueue.isEmpty() && file_read_done == 1)
+			System.out.println("sch entr");
+			//System.out.println("CPU:\tIOQ size: " + ioQueue.size());
+			//System.out.println("CPU:\tRQ size: " + readyQueue.size());
+			if(readyQueue.isEmpty() && ioQueue.isEmpty() && file_read_done == 1 && io_sys_done == 1)
 				break;
 			try {
 				if(alg.equals("FIFO")){
@@ -31,37 +36,60 @@ public class CPUScheduler extends Prog implements Runnable{
 			} catch (InterruptedException e) {e.printStackTrace();}
 		}
 		cpu_sch_done = 1;
+		System.out.println("CPU:\tCPU DONE");
 	}
 	private void fifo() throws InterruptedException{
-		PCB element;
+		/**
 		sem1.acquire();
-		System.out.println("Sem1 acquired");
+		System.out.println("CPU:\tSem1 acquired\tsem1 size: " + sem1.availablePermits());
 		element = readyQueue.pop();
-		System.out.println(element.CPUBurst[element.cpuIndex] + "Accessed");
+		
+		try{
 		Thread.sleep(element.CPUBurst[element.cpuIndex]);
+		}catch(ArrayIndexOutOfBoundsException e){
+			System.out.println("CPU: Out of bounds thrown");
+			System.out.println("CPU: CPUindex: " + element.cpuIndex);
+		}
 		element.cpuIndex++;
 		
-		if(!(element.cpuIndex >= element.numCPUBurst )){
+		//add one because index starts at 0
+		if(!(element.cpuIndex+1 >= element.numCPUBurst )){
 			mutex2.acquire();
 			ioQueue.push(element);
 			mutex2.release();
 			sem2.release();
+			//System.out.println("CPU:\tSem2 released\tsem2 size: " + sem2.availablePermits());
 		}
+		//System.out.println("CPU:\tEnd loop");
+		 * 
+		 */
 		
 	}
 	private void sjf() throws InterruptedException{
-		//PCB element;
-		//sem1.acquire();
-		//element = readyQueue.pop();		
-		//Thread.sleep(element.CPUBurst[element.cpuIndex]);
-		//element.cpuIndex++;
 		
-		//if(!(element.numCPUBurst >= element.cpuIndex)){
-		//	mutex2.acquire();
-		//	ioQueue.push(element);
-		//	mutex2.release();
-		//	sem2.release();
-		//}
+		sem1.acquire();
+		System.out.println("CPU:\tSem1 acquired\tsem1 size: " + sem1.availablePermits());
+		
+		element = readyQueue.getShortest();
+		System.out.println("IM HERE");
+		try{
+		Thread.sleep(element.CPUBurst[element.cpuIndex]);
+		}catch(ArrayIndexOutOfBoundsException e){
+			System.out.println("CPU: Out of bounds thrown");
+			System.out.println("CPU: CPUindex: " + element.cpuIndex);
+		}
+		element.cpuIndex++;
+		
+		//add one because index starts at 0
+		if(!(element.cpuIndex+1 >= element.numCPUBurst )){
+			mutex2.acquire();
+			ioQueue.push(element);
+			mutex2.release();
+			sem2.release();
+			System.out.println("CPU:\tSem2 released\tsem2 size: " + sem2.availablePermits());
+		}
+		System.out.println("CPU:\tEnd loop");
+		
 	}
 	private void pr(){
 	
@@ -70,7 +98,6 @@ public class CPUScheduler extends Prog implements Runnable{
 	
 	}
 
-	@Override
 	public void run() {
 		scheduler();
 		

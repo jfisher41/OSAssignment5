@@ -31,12 +31,13 @@ public class Prog {
 	
 	public static void main(String[] args) {
 		
+		
 		helper = new MainHelper();
 		ioQueue = new DoubleLinkedList();
 		readyQueue = new DoubleLinkedList();
 		
-		sem1 = new Semaphore(0);
-		sem2 = new Semaphore(0);
+		sem1 = new Semaphore(cpu_sch_done);
+		sem2 = new Semaphore(cpu_sch_done);
 		mutex1 = new Semaphore(1);
 		mutex2 = new Semaphore(1);
 		
@@ -74,16 +75,17 @@ public class Prog {
 		
 		IOSystem io = new IOSystem();
 		Thread t3 = new Thread(io);
-		
+		try {
 		//start the threads
 		t1.start();
+		t1.join();
 		t2.start();
 		t3.start();
 		
 		//for(int i = 0; i < 100; i++)
 		//System.out.println((i+1) + "One-thousand");
 		
-		try {
+		
 			t1.join();
 			System.out.println("1 joined");
 			t2.join();
@@ -96,6 +98,7 @@ public class Prog {
 		
 		//Update the ioQueue
 		//ioQueue = helper.getList();
+
 
 		helper.printStats(commandArgs[6], arguments[2]);
 	}

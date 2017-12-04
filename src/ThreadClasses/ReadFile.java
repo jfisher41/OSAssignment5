@@ -36,6 +36,7 @@ public class ReadFile extends Prog implements Runnable {
 				}catch (RuntimeException e){break;} 
 			}
 			file_read_done = 1;
+			System.out.println("READ:\tREAD DONE");
 			
 			buffReader.close();
 			
@@ -46,19 +47,20 @@ public class ReadFile extends Prog implements Runnable {
 	
 	public void analyzeLine(String []line){
 		if(line[0].equals("proc")){
+			System.out.println("READ:\tproc detected");
 			proc(line);
-			System.out.println("proc detected");
+			
 		}
 		else if(line[0].equals("sleep")){
-			System.out.println("sleep detected");
+			System.out.println("READ:\tsleep detected");
 			sleep(line);
 		}
 		else if(line[0].equals("stop")){
-			System.out.println("stop detected");
+			System.out.println("READ:\tstop detected");
 			throw new RuntimeException();
 		}
 		else
-			System.out.println("Invalid keyword");
+			System.out.println("READ:\tInvalid keyword \"" + line[0] + "\"");
 	}
 	
 	//handles a proc line
@@ -82,7 +84,7 @@ public class ReadFile extends Prog implements Runnable {
 			sem1.release();
 		} catch (InterruptedException e) {e.printStackTrace();}
 		
-		System.out.println("Sem1 released");
+		System.out.println("READ:\tSem1 released\tsem1 size: " + sem1.availablePermits());
 	}
 	
 	private void sleep(String line[]){

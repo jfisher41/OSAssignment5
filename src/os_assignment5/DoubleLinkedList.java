@@ -24,6 +24,7 @@ public class DoubleLinkedList {
 			tail.next = element;
 			element.prev = tail;
 			tail = element;
+			tail.next = null;
 		}
 		if(head == null){
 			head = tail = element;
@@ -33,22 +34,63 @@ public class DoubleLinkedList {
 	}
 	
 	public PCB pop(){
-		if(size == 0){
-			System.out.println("No more elements");
-		}
-		System.out.println("Here1");
 		PCB temp = head;
-		System.out.println("Here2");
+		if(head == null)
+			return null;
 		head = head.next;
-		System.out.println("Here3");
-		head.prev = null;
-		System.out.println("Here4");
+		
+		if(head != null)
+			head.prev = null;
+
 		size--;
-		//System.out.println("popped: " + size);
+
 		return temp;
 	}
 	
+	public PCB peek(){
+		return head;
+	}
+	public PCB getShortest(){
+		PCB result = head;
+		PCB minPCB = head;
+		int minCPU = head.CPUBurst[head.cpuIndex];
+		int length = size;
+		int current;
+		//System.out.println("Head:\t" + head);
+		//System.out.println("Result:\t" + result);
+		
+		
+		while(result != null){
+			current = result.CPUBurst[result.cpuIndex];
+			if(current < minCPU){
+				minCPU = current;
+				minPCB = result;
+			}
+			result = result.next;	
+		}
+		//System.out.println("Min PCB:\t" + minPCB);
+		removeElement(minPCB);
+		return minPCB;
+	}
 	
+	public void removeElement(PCB element){
+		int length = size;
+		int found = 0;
+		PCB temp;
+		for(int i = 0; i < length; i++){
+			temp = pop();
+			if(temp != element){
+				push(temp);
+			}
+			else{
+				found = 1;
+				System.out.println("Element removed");
+			}
+		}
+		if(found != 1)
+			System.out.println("Element not found");
+		
+	}
 	
 	
 }
