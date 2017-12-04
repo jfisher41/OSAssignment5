@@ -29,6 +29,8 @@ public class Prog {
 	public static int cpu_sch_done;
 	public static int io_sys_done;
 	
+	public static int procNum = 0;
+	
 	public static void main(String[] args) {
 		
 		
@@ -38,8 +40,8 @@ public class Prog {
 		
 		sem1 = new Semaphore(cpu_sch_done);
 		sem2 = new Semaphore(cpu_sch_done);
-		mutex1 = new Semaphore(1);
-		mutex2 = new Semaphore(1);
+		mutex1 = new Semaphore(cpu_sch_done);
+		mutex2 = new Semaphore(cpu_sch_done);
 		
 		file_read_done = 0;
 		cpu_sch_done = 0;
@@ -62,7 +64,7 @@ public class Prog {
 		**/
 		
 		//temp command line simulator
-		String commandArgs[] = {"prog", "-alg", "FIFO", "-quantum", "3", "-input", "input.txt"};
+		String commandArgs[] = {"prog", "-alg", "PR", "-quantum", "3", "-input", "input.txt"};
 		arguments = commandArgs;
 		
 		

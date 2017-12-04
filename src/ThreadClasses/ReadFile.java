@@ -13,9 +13,11 @@ public class ReadFile extends Prog implements Runnable {
 	String fileName;
 	DoubleLinkedList list;
 	PCB queue[];
+	int numberOfProccesses;
 	
 	public ReadFile(String fileName){
 		this.fileName = fileName;
+		numberOfProccesses = 0;
 
 	}
 	
@@ -36,6 +38,7 @@ public class ReadFile extends Prog implements Runnable {
 				}catch (RuntimeException e){break;} 
 			}
 			file_read_done = 1;
+			procNum = numberOfProccesses;
 			System.out.println("READ:\tREAD DONE");
 			
 			buffReader.close();
@@ -48,6 +51,7 @@ public class ReadFile extends Prog implements Runnable {
 	public void analyzeLine(String []line){
 		if(line[0].equals("proc")){
 			System.out.println("READ:\tproc detected");
+			numberOfProccesses++;
 			proc(line);
 			
 		}
