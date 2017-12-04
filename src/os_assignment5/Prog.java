@@ -64,7 +64,7 @@ public class Prog {
 		**/
 		
 		//temp command line simulator
-		String commandArgs[] = {"prog", "-alg", "SJF", "-quantum", "30", "-input", "input.txt"};
+		String commandArgs[] = {"prog", "-alg", "RR", "-quantum", "30", "-input", "input.txt"};
 		arguments = commandArgs;
 		
 		
@@ -80,7 +80,7 @@ public class Prog {
 		try {
 		//start the threads
 		t1.start();
-		//t1.join();
+		t1.join();
 		t2.start();
 		t3.start();
 		

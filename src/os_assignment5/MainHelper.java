@@ -1,7 +1,7 @@
 package os_assignment5;
 
 public class MainHelper {
-	DoubleLinkedList list = new DoubleLinkedList();
+	//DoubleLinkedList list = new DoubleLinkedList();
 	
 	//Prints the output for the program
 	public void printStats(String fileName, String alg){
@@ -81,9 +81,9 @@ public class MainHelper {
 	**/
 	
 	//returns the list of the PCBs
-	public DoubleLinkedList getList(){
-		return list;
-	}
+	//public DoubleLinkedList getList(){
+	//	return list;
+	//}
 	
 	//printer methods
 	public void printStringArray(String arr[]){
@@ -103,11 +103,11 @@ public class MainHelper {
 			System.out.println(tmp.priority);
 		}
 	}
-	public void printLinkedList(){
-		PCB tmp;
-		while(!list.isEmpty()){
-			tmp = list.pop();
-			System.out.println(tmp.priority);
-		}
-	}
+	//public void printLinkedList(){
+	//	PCB tmp;
+	//	while(!list.isEmpty()){
+	//		tmp = list.pop();
+	//		System.out.println(tmp.CPUBurst[0]);
+	//	}
+	//}
 }

@@ -19,7 +19,7 @@ public class CPUScheduler extends Prog implements Runnable{
 		while(true){
 			System.out.println("sch entr");
 			System.out.println("CPU:\tIOQ size: " + ioQueue.size());
-			System.out.println("CPU:\tRQ size: " + readyQueue.size());
+			System.out.println("CPU:\t--------RQ size: " + readyQueue.size() + "--------");
 			System.out.println("CPU:\tioDone: " + io_sys_done);
 			if(readyQueue.isEmpty() && ioQueue.isEmpty() && file_read_done == 1)
 				break;
@@ -50,7 +50,7 @@ public class CPUScheduler extends Prog implements Runnable{
 		 try {
 				sem1.acquire();
 				element = readyQueue.pop();
-				
+				System.out.println(element.cpuIndex);
 				cpuBurstTime = element.CPUBurst[element.cpuIndex];
 				Thread.sleep(cpuBurstTime);
 				element.cpuIndex++;
@@ -66,8 +66,14 @@ public class CPUScheduler extends Prog implements Runnable{
 	}
 	private void sjf() throws InterruptedException{
 		 try {
-				sem1.acquire();
+				
+			 	sem1.acquire();
+			 	mutex1.acquire();
+			 	System.out.println("Mutex1 acquired by CPU!");
 				element = readyQueue.getShortest();
+				System.out.println("Mutex1 released by CPU!");
+				mutex1.release();
+				
 				
 				cpuBurstTime = element.CPUBurst[element.cpuIndex];
 				Thread.sleep(cpuBurstTime);
