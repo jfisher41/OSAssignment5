@@ -22,7 +22,7 @@ public class ReadFile extends Prog implements Runnable {
 	}
 	
 	public void read(){
-		
+		//System.out.println("Hello");
 		String fileContents[];
 		String line = null;
 		try {
@@ -81,12 +81,12 @@ public class ReadFile extends Prog implements Runnable {
 		element.CPUBurst = getBurst(element.numCPUBurst, line, "CPU");
 		element.IOBurst = getBurst(element.numIOBurst, line, "IO");
 		
-		try {
-			mutex1.acquire();
+		//try {
+			//mutex1.acquire();
 			readyQueue.push(element);
-			mutex1.release();
+			//mutex1.release();
 			sem1.release();
-		} catch (InterruptedException e) {e.printStackTrace();}
+		//} catch (InterruptedException e) {e.printStackTrace();}
 		
 		System.out.println("READ:\tSem1 released\tsem1 size: " + sem1.availablePermits());
 	}

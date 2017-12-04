@@ -9,15 +9,17 @@ public class IOSystem extends Prog implements Runnable {
 		PCB element = null;
 		
 		while(true){
-			
+			System.out.println("---------------IO ENTERED---");
 			System.out.println("IO:\tIOQ size: " + ioQueue.size());
 			System.out.println("IO:\tRQ size: " + readyQueue.size());
 			
-			if(readyQueue.isEmpty() && ioQueue.isEmpty() && file_read_done == 1){
+			if(cpu_sch_done == 1 || (readyQueue.isEmpty() && ioQueue.isEmpty() && file_read_done == 1)){
+				System.out.println("---------------IO JAILBREAK---");
 				break;
 			}
 			
 			try {
+				
 				//mutex2.acquire();
 				sem2.acquire();
 				element = ioQueue.pop();
@@ -37,6 +39,7 @@ public class IOSystem extends Prog implements Runnable {
 				System.out.println("IO:\tSem1 released\tsem1 size: " + sem1.availablePermits());
 			} //catch (InterruptedException e) {e.printStackTrace();}
 			catch (Exception e) {System.out.println("ERROR\npriority: " + element.priority + "index: " + element.ioIndex);}
+			System.out.println("---------------IO ENDED---");
 		}
 		
 	io_sys_done = 1;

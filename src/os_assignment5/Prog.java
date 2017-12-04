@@ -40,8 +40,8 @@ public class Prog {
 		
 		sem1 = new Semaphore(cpu_sch_done);
 		sem2 = new Semaphore(cpu_sch_done);
-		mutex1 = new Semaphore(cpu_sch_done);
-		mutex2 = new Semaphore(cpu_sch_done);
+		mutex1 = new Semaphore(1);
+		mutex2 = new Semaphore(1);
 		
 		file_read_done = 0;
 		cpu_sch_done = 0;
@@ -64,7 +64,7 @@ public class Prog {
 		**/
 		
 		//temp command line simulator
-		String commandArgs[] = {"prog", "-alg", "PR", "-quantum", "3", "-input", "input.txt"};
+		String commandArgs[] = {"prog", "-alg", "SJF", "-quantum", "30", "-input", "input.txt"};
 		arguments = commandArgs;
 		
 		
@@ -80,7 +80,7 @@ public class Prog {
 		try {
 		//start the threads
 		t1.start();
-		t1.join();
+		//t1.join();
 		t2.start();
 		t3.start();
 		
