@@ -4,7 +4,6 @@ public class DoubleLinkedList {
 	PCB head;
 	PCB tail;
 	int size;
-	Printer helper = new Printer();
 	
 	public DoubleLinkedList(){
 		head = null;
@@ -153,7 +152,6 @@ public class DoubleLinkedList {
 			tmp = tmp.next;
 			counter++;
 		}
-		
 		System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
 	}
 }

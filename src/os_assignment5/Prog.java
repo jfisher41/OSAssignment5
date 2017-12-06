@@ -81,7 +81,6 @@ public class Prog {
 			return;
 		}
 			
-		
 		//Set up threads
 		ReadFile reader = new ReadFile(file);
 		Thread t1 = new Thread(reader);

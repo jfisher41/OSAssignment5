@@ -10,19 +10,10 @@ public class PCB {
 	public int IOBurst[];
 	public PCB prev;
 	public PCB next;
-	
 	public long rQueueInputTime;
 	public long totalWaitingTime = 0;
 	public long totalUtilization = 0;
-
 	public long creationTime;
 	public int id;
 	public int done = 0;
-
-	
-	
-	
-	
-	
-
 }
