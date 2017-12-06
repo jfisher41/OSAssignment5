@@ -20,7 +20,6 @@ public class IOSystem extends Prog implements Runnable {
 				
 				Thread.sleep(element.IOBurst[element.ioIndex]);
 				element.ioIndex++;
-				
 
 				mutex1.acquire();
 				
@@ -29,14 +28,8 @@ public class IOSystem extends Prog implements Runnable {
 
 				sem1.release();
 				mutex1.release();
-				
 
-				//System.out.println("IO:\tSem1 released\tsem1 size: " + sem1.availablePermits());
-			} //catch (InterruptedException e) {e.printStackTrace();}
-			catch (Exception e) {
-				//System.out.println("ERROR\npriority: " + element.priority + "index: " + element.ioIndex);
-				}
-			//System.out.println("---------------IO ENDED---");
+			} catch (InterruptedException e) {e.printStackTrace();}
 		}
 		
 	io_sys_done = 1;
@@ -46,5 +39,4 @@ public class IOSystem extends Prog implements Runnable {
 	public void run() {
 		ioSystem();
 	}
-
 }

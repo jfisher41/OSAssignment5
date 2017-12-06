@@ -80,6 +80,8 @@ public class ReadFile extends Prog implements Runnable {
 		element.numIOBurst = burstNum/2;
 		element.CPUBurst = getBurst(element.numCPUBurst, line, "CPU");
 		element.IOBurst = getBurst(element.numIOBurst, line, "IO");
+		
+		element.creationTime = System.currentTimeMillis();
 		element.rQueueInputTime = System.currentTimeMillis();
 		
 		//try {

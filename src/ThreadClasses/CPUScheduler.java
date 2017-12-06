@@ -44,112 +44,85 @@ public class CPUScheduler extends Prog implements Runnable{
 		cpu_sch_done = 1;
 		System.out.println("CPU:\tCPU DONE");
 	}
-	private void fifo() throws InterruptedException{
-		
-		 try {
-				sem1.acquire();
-				element = readyQueue.pop();
-				
-				//for waiting time
-				element.totalWaitingTime += System.currentTimeMillis() - element.rQueueInputTime;
-				
-				cpuBurstTime = element.CPUBurst[element.cpuIndex];
-				
-				beforeSleep = System.currentTimeMillis();
-				Thread.sleep(cpuBurstTime);
-				afterSleep = System.currentTimeMillis();
-				element.totalUtilization += afterSleep - beforeSleep;
-				
-				element.cpuIndex++;
-				
-				if(element.numCPUBurst > element.cpuIndex+1){
-					mutex2.acquire();
-					ioQueue.push(element);
-					sem2.release();
-					
-					//for waiting time
-					totalUtilization += element.totalUtilization;
-					totalWaitingTime += element.totalWaitingTime;
-					mutex2.release();
-				}
-	         } catch (InterruptedException e) {}
-	   
-	}
-	private void sjf() throws InterruptedException{
-		 try {
-			 	sem1.acquire();
-			 	mutex1.acquire();
-				element = readyQueue.getShortest();
-				
-				mutex1.release();
-				
-				cpuBurstTime = element.CPUBurst[element.cpuIndex];
-				Thread.sleep(cpuBurstTime);
-				element.cpuIndex++;
-
-				if(element.numCPUBurst > element.cpuIndex+1){
-					
-					mutex2.acquire();
-					ioQueue.push(element);
-					sem2.release();
-					mutex2.release();
-				}
-	         } catch (InterruptedException e) {}
-	   
-	}
-	private void pr(){
-		
-		try {
-			sem1.acquire();
-			element = readyQueue.getPriority();
-
-			cpuBurstTime = element.CPUBurst[element.cpuIndex];
-			Thread.sleep(cpuBurstTime);
-			element.cpuIndex++;
-
-			if(element.numCPUBurst > element.cpuIndex+1){
-				mutex2.acquire();
-				ioQueue.push(element);
-				sem2.release();
-				mutex2.release();
-			}
-		} catch (InterruptedException e) {}
-	   
 	
+	private void fifo() throws InterruptedException{
+			sem1.acquire();
+			element = readyQueue.pop();
+			performCalculations(element);	
 	}
-	private void rr(){
+	
+	private void sjf() throws InterruptedException{
+			sem1.acquire();
+			element = readyQueue.getShortest();
+			performCalculations(element);	   
+	}
+	
+	private void pr() throws InterruptedException{
+	
+		sem1.acquire();
+		element = readyQueue.getPriority();
+		performCalculations(element);
+	}
+	
+	private void rr() throws InterruptedException{
 		int quantum = Integer.parseInt(arguments[4]);
 		int cpuBurstTime;
 		
-		try {
-			sem1.acquire();
-			element = readyQueue.pop();
-			cpuBurstTime = element.CPUBurst[element.cpuIndex];
-			
-			if(cpuBurstTime < quantum){
-				Thread.sleep(cpuBurstTime);
-				element.cpuIndex++;
-				
-			}
-			else{
-				Thread.sleep(quantum);
-				cpuBurstTime -= quantum;
-				element.CPUBurst[element.cpuIndex] = cpuBurstTime;
-				
-			}
+		sem1.acquire();
+		element = readyQueue.pop();
+		cpuBurstTime = element.CPUBurst[element.cpuIndex];
+		
+		if(cpuBurstTime < quantum){
+			Thread.sleep(cpuBurstTime);
+			element.cpuIndex++;		
+		}
+		else{
+			Thread.sleep(quantum);
+			cpuBurstTime -= quantum;
+			element.CPUBurst[element.cpuIndex] = cpuBurstTime;	
+		}
 
-			if(element.numCPUBurst > element.cpuIndex + 1){
-				
-				mutex2.acquire();
-				ioQueue.push(element);
-				sem2.release();
-				mutex2.release();
-			}
-         } catch (InterruptedException e) {}
+		if(element.numCPUBurst > element.cpuIndex + 1){
+			mutex2.acquire();
+			ioQueue.push(element);
+			sem2.release();
+			mutex2.release();
+		}
+	}
+	
+	private void performCalculations(PCB element) throws InterruptedException{
+		//calculate time element spent in readyQueue
+		element.totalWaitingTime += System.currentTimeMillis() - element.rQueueInputTime;
+		
+		//getBurstime based on cpuBurst idex
+		cpuBurstTime = element.CPUBurst[element.cpuIndex];
+		
+		beforeSleep = System.currentTimeMillis();
+		Thread.sleep(cpuBurstTime);
+		afterSleep = System.currentTimeMillis();
+		
+		//calculate the amount of time the thread slept
+		element.totalUtilization += afterSleep - beforeSleep;
+		
+		//update index
+		element.cpuIndex++;
+		
+		//if last cpuBurst
+		if(element.numCPUBurst > element.cpuIndex+1){
+			mutex2.acquire();
+			ioQueue.push(element);
+			sem2.release();
+			
+			//update stats before disgarding the element
+			totalUtilization += element.totalUtilization;
+			totalTurnaround += (System.currentTimeMillis() - element.creationTime);
+			totalWaitingTime += element.totalWaitingTime;
+			
+			mutex2.release();
+		}
 	}
 
 	public void run() {
 		scheduler();
 	}
-
 }

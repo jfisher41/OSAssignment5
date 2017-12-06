@@ -1,5 +1,6 @@
 package os_assignment5;
 
+import java.text.DecimalFormat;
 import java.util.concurrent.Semaphore;
 import ThreadClasses.CPUScheduler;
 import ThreadClasses.IOSystem;
@@ -45,15 +46,17 @@ public class Prog {
 		cpu_sch_done = 0;
 		io_sys_done = 0;
 		
-		long startTime;
-		long endTime;
-		long totalTime = 0;
+		double startTime;
+		double endTime;
+		double totalTime = 0;
 		
-		long cpuUtilization = 0;
-		long througput = 0;
-		long avgTurnaroundTime = 0;
-		long avgWaitingTime = 0;
+		double cpuUtilization = 0.0;
+		double throughput = 0.0;
+		double avgTurnaroundTime = 0.0;
+		double avgWaitingTime = 0.0;
 		
+		
+		DecimalFormat numberFormat = new DecimalFormat("#.00");
 		/**
 		//Get argv from the console
 		Scanner scan = new Scanner(System.in);
@@ -107,12 +110,16 @@ public class Prog {
 		//get CPU Utilization
 		cpuUtilization = totalTime - totalUtilization;
 		
-		//get avg waiting time
-		avgWaitingTime = totalWaitingTime/procNum;
+		//get Throughput
+		throughput = (double)procNum/totalTime;
 		
-		System.out.println("Total time = " + totalTime);
-		System.out.println();
-		System.out.println("Total waiting time = " + totalWaitingTime + "\tNumber of procs = " + procNum + "\tavg waiting time = " + avgWaitingTime);
-		helper.printStats(commandArgs[6], arguments[2]);
+		//get Avg. Turnaround Time
+		avgTurnaroundTime = (double)totalTurnaround/procNum;
+	
+		//get Avg. Waiting Time
+		avgWaitingTime = (double)totalWaitingTime/procNum;
+		
+
+		helper.printStats(commandArgs[6], arguments[2], cpuUtilization, throughput, avgTurnaroundTime, avgWaitingTime);
 	}
 }

@@ -16,6 +16,10 @@ public class PCB {
 	
 	public long totalUtilization = 0;
 	
+	public long creationTime;
+	
+	
+	
 	
 	
 

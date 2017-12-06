@@ -1,23 +1,44 @@
 package os_assignment5;
 
+import java.text.DecimalFormat;
+
 public class MainHelper {
 	//DoubleLinkedList list = new DoubleLinkedList();
 	
 	//Prints the output for the program
-	public void printStats(String fileName, String algorithm){
-		String stats [] = new String[6];
-		stats[0] = fileName;
-		stats[1] = algorithm;
-		stats[2] = 
+	public void printStats(String fileName, String algorithm, double utilization, double throughput, double turnaround, double waiting){
+		DecimalFormat numberFormat = new DecimalFormat("0.000");
+		double stats [] = new double[4];
+		String printout[] = new String[6];
+		
+		printout[0] = fileName;
+		printout[1] = algorithm;
+		
+		int index = 2;
+		
+		stats[0] = utilization;
+		stats[1] = throughput;
+		stats[2] = turnaround;
+		stats[3] = waiting;
+		
+		for(double stat : stats){
+			if(stat == 0.0)
+				printout[index] = "....";
+			else
+				printout[index] = numberFormat.format(stat);
+			
+			index++;
+		}
+		
 		System.out.printf("---------------------------------------\n"
 				+ "Input File Name\t\t\t: %s\n"
 				+ "CPU Scheduling Alg\t\t: %s\n"
-				+ "CPU Utilization\t\t\t: ....\n"
-				+ "Throughput\t\t\t: ....\n"
-				+ "Avg. Turaround Time\t\t: ....\n"
-				+ "Avg. Waiting Time in R Queue\t: ....\n"
+				+ "CPU Utilization\t\t\t: %s\n"
+				+ "Throughput\t\t\t: %s\n"
+				+ "Avg. Turaround Time\t\t: %s\n"
+				+ "Avg. Waiting Time in R Queue\t: %s\n"
 				+ "---------------------------------------",
-				fileName, alg);
+				printout[0], printout[1], printout[2], printout[3], printout[4], printout[5]);
 	}
 	
 	/**
