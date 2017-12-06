@@ -4,7 +4,11 @@ public class MainHelper {
 	//DoubleLinkedList list = new DoubleLinkedList();
 	
 	//Prints the output for the program
-	public void printStats(String fileName, String alg){
+	public void printStats(String fileName, String algorithm){
+		String stats [] = new String[6];
+		stats[0] = fileName;
+		stats[1] = algorithm;
+		stats[2] = 
 		System.out.printf("---------------------------------------\n"
 				+ "Input File Name\t\t\t: %s\n"
 				+ "CPU Scheduling Alg\t\t: %s\n"

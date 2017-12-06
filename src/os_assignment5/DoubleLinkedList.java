@@ -33,9 +33,9 @@ public class DoubleLinkedList {
 		if(head == null){
 			head = tail = element;
 		}
-		System.out.println("----------PUSHED: " + element.CPUBurst[0] + " index is: " + element.cpuIndex + " ----------");
+		//System.out.println("----------PUSHED: " + element.CPUBurst[0] + " index is: " + element.cpuIndex + " ----------");
 		size++;
-		System.out.println("pushed: " + size);
+		//System.out.println("pushed: " + size);
 		
 	}
 	
@@ -51,7 +51,7 @@ public class DoubleLinkedList {
 			head = null;
 
 		size--;
-		System.out.println("----------POPPED: " + temp.CPUBurst[0] + " index is: " + temp.cpuIndex + " ----------");
+		//System.out.println("----------POPPED: " + temp.CPUBurst[0] + " index is: " + temp.cpuIndex + " ----------");
 		return temp;
 	}
 	

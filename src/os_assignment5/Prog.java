@@ -1,16 +1,9 @@
 package os_assignment5;
 
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.util.Scanner;
 import java.util.concurrent.Semaphore;
-
 import ThreadClasses.CPUScheduler;
 import ThreadClasses.IOSystem;
 import ThreadClasses.ReadFile;
-
-
 
 public class Prog {
 	
@@ -31,6 +24,11 @@ public class Prog {
 	
 	public static int procNum = 0;
 	
+	public static long totalWaitingTime = 0;
+	public static int totalTurnaround = 0;
+	public static int totalUtilization = 0;
+
+	
 	public static void main(String[] args) {
 		
 		
@@ -47,8 +45,14 @@ public class Prog {
 		cpu_sch_done = 0;
 		io_sys_done = 0;
 		
+		long startTime;
+		long endTime;
+		long totalTime = 0;
 		
-		
+		long cpuUtilization = 0;
+		long througput = 0;
+		long avgTurnaroundTime = 0;
+		long avgWaitingTime = 0;
 		
 		/**
 		//Get argv from the console
@@ -64,7 +68,7 @@ public class Prog {
 		**/
 		
 		//temp command line simulator
-		String commandArgs[] = {"prog", "-alg", "RR", "-quantum", "30", "-input", "input.txt"};
+		String commandArgs[] = {"prog", "-alg", "FIFO", "-quantum", "30", "-input", "input.txt"};
 		arguments = commandArgs;
 		
 		
@@ -77,16 +81,14 @@ public class Prog {
 		
 		IOSystem io = new IOSystem();
 		Thread t3 = new Thread(io);
+		
+		startTime = System.currentTimeMillis();
 		try {
 		//start the threads
-		t1.start();
-		t1.join();
-		t2.start();
-		t3.start();
-		
-		//for(int i = 0; i < 100; i++)
-		//System.out.println((i+1) + "One-thousand");
-		
+			t1.start();
+			t1.join();
+			t2.start();
+			t3.start();
 		
 			t1.join();
 			System.out.println("1 joined");
@@ -94,15 +96,23 @@ public class Prog {
 			System.out.println("2 joined");
 			t3.join();
 			System.out.println("3 joined");
+			
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
+		//get total time
+		endTime = System.currentTimeMillis();
+		totalTime = endTime - startTime;
 		
-		//Update the ioQueue
-		//ioQueue = helper.getList();
-
-
+		//get CPU Utilization
+		cpuUtilization = totalTime - totalUtilization;
+		
+		//get avg waiting time
+		avgWaitingTime = totalWaitingTime/procNum;
+		
+		System.out.println("Total time = " + totalTime);
+		System.out.println();
+		System.out.println("Total waiting time = " + totalWaitingTime + "\tNumber of procs = " + procNum + "\tavg waiting time = " + avgWaitingTime);
 		helper.printStats(commandArgs[6], arguments[2]);
 	}
-
 }

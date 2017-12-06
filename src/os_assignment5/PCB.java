@@ -11,6 +11,11 @@ public class PCB {
 	public PCB prev;
 	public PCB next;
 	
+	public long rQueueInputTime;
+	public long totalWaitingTime = 0;
+	
+	public long totalUtilization = 0;
+	
 	
 	
 
