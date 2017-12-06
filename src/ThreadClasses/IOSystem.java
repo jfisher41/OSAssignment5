@@ -14,22 +14,26 @@ public class IOSystem extends Prog implements Runnable {
 			}
 			
 			try {
+				
 				while(!sem2.tryAcquire() && cpu_sch_done != 1);
+
 				element = ioQueue.pop();
-	
+				System.out.println("IO:\trecieved " + element.id);
 				if(element.done != 1){
-					
-					Thread.sleep(element.IOBurst[element.ioIndex]);
-					element.ioIndex++;
+					if(element.numIOBurst > element.ioIndex){
+						Thread.sleep(element.IOBurst[element.ioIndex]);
+						element.ioIndex++;
+					}
 					mutex1.acquire();
 				
 					element.rQueueInputTime = System.currentTimeMillis();
 					readyQueue.push(element);
-					//System.out.println("IO:\tpushed " + element.id);
+					System.out.println("IO:\tpushed " + element.id);
 					sem1.release();
 					mutex1.release();
 				}
 				else{
+					System.out.println("here");
 					sem2.release();
 				}
 

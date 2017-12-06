@@ -23,10 +23,14 @@ public class CPUScheduler extends Prog implements Runnable{
 	private void scheduler(){
 		while(true){
 			
-			if(readyQueue.isEmpty() && ioQueue.isEmpty2() && file_read_done == 1)
+			if(readyQueue.isEmpty() && ioQueue.isEmpty2() && file_read_done == 1){
+				System.out.println("one broke");
 				break;
-			if(allDone == procNum)
+			}
+			if(allDone == procNum){
+				System.out.println("two broke");
 				break;
+			}
 			
 			try {
 				if(alg.equals("FIFO")){
@@ -51,17 +55,16 @@ public class CPUScheduler extends Prog implements Runnable{
 			PCB element;
 			sem1.acquire();
 			element = readyQueue.pop();
-			//System.out.println("CPU:\trecieved: " + element.id);
 			performCalculations(element);	
 	}
 	
 	//If algorithm is SJF
 	private void sjf() throws InterruptedException{
 		PCB element;
-			sem1.acquire();
-			element = readyQueue.getShortest();
-			performCalculations(element);	   
-	}
+		sem1.acquire();		
+		element = readyQueue.getShortest2();
+		performCalculations(element);	
+		}
 	
 	//If algorithm is PR
 	private void pr() throws InterruptedException{
@@ -76,6 +79,7 @@ public class CPUScheduler extends Prog implements Runnable{
 		PCB element;
 		sem1.acquire();
 		element = readyQueue.pop();
+		System.out.println("CPU:\trecieved " + element.id);
 		
 		//calculate time element spent in readyQueue
 		element.totalWaitingTime += System.currentTimeMillis() - element.rQueueInputTime;
@@ -100,27 +104,36 @@ public class CPUScheduler extends Prog implements Runnable{
 			//calculate the amount of time the thread slept
 			element.totalUtilization += afterSleep - beforeSleep;
 			
+			System.out.println("before: " + element.CPUBurst[element.cpuIndex]);
 			cpuBurstTime -= quantum;
 			element.CPUBurst[element.cpuIndex] = cpuBurstTime;	
+			System.out.println("after: " + element.CPUBurst[element.cpuIndex] + " " + element.cpuIndex + " " + element.id);
 		}
 
-		if(element.numCPUBurst > element.cpuIndex + 1){
-			mutex2.acquire();
-			ioQueue.push(element);
-			System.out.println("\tCPU: pushed " + element.id + " to IOQueue");
-			sem2.release();
+		if(element.cpuIndex >= element.numCPUBurst){
+			System.out.println("Marked " + element.id + " as done.");
+			element.done = 1;
+			allDone++;
 			
 			//update stats before disgarding the element
 			totalUtilization += element.totalUtilization;
 			totalTurnaround += (System.currentTimeMillis() - element.creationTime);
 			totalWaitingTime += element.totalWaitingTime;
 			
+		}
+		else{
+
+			mutex2.acquire();
+			ioQueue.push(element);
+			System.out.println("CPU:\tpushed " + element.id);
+			sem2.release();
 			mutex2.release();
 		}
 	}
 	
 	//Code used for FIFO, SJF, and PR
 	private void performCalculations(PCB element) throws InterruptedException{
+			
 		//calculate time element spent in readyQueue
 		element.totalWaitingTime += System.currentTimeMillis() - element.rQueueInputTime;
 		
@@ -129,8 +142,8 @@ public class CPUScheduler extends Prog implements Runnable{
 		
 		beforeSleep = System.currentTimeMillis();
 		Thread.sleep(cpuBurstTime);
-		System.out.println("Slept " + cpuBurstTime);
 		afterSleep = System.currentTimeMillis();
+		System.out.println("Slept " + cpuBurstTime);
 		
 		//calculate the amount of time the thread slept
 		element.totalUtilization += afterSleep - beforeSleep;
@@ -141,26 +154,23 @@ public class CPUScheduler extends Prog implements Runnable{
 		//if last cpuBurst
 		
 		if(element.cpuIndex >= element.numCPUBurst){
-			//System.out.println("Marked " + element.id + " as done.");
+			System.out.println("Marked " + element.id + " as done.");
 			element.done = 1;
 			allDone++;
-		}
-		else{
-
-			mutex2.acquire();
-			
-			ioQueue.push(element);
-			
-			sem2.release();
 			
 			//update stats before disgarding the element
 			totalUtilization += element.totalUtilization;
 			totalTurnaround += (System.currentTimeMillis() - element.creationTime);
 			totalWaitingTime += element.totalWaitingTime;
 			
+		}
+		else{
+
+			mutex2.acquire();
+			ioQueue.push(element);
+			sem2.release();
 			mutex2.release();
 		}
-		
 	}
 
 	public void run() {

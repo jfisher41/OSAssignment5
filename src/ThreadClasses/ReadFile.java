@@ -81,12 +81,8 @@ public class ReadFile extends Prog implements Runnable {
 		
 		element.id = numberOfProccesses;
 		
-		element.note = "in READ";
-		
 		readyQueue.push(element);
 		System.out.println("READ:\tpushed " + element.id);
-		//readyQueue.printList("READ ReadyQueue");
-		//ioQueue.printList("READ IOQueue");
 		sem1.release();
 	}
 	

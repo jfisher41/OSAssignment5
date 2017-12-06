@@ -1,5 +1,7 @@
 package os_assignment5;
 
+import java.util.concurrent.Semaphore;
+
 public class DoubleLinkedList {
 	PCB head;
 	PCB tail;
@@ -68,23 +70,38 @@ public class DoubleLinkedList {
 	public PCB peek(){
 		return head;
 	}
-	public PCB getShortest(){
+	public PCB getShortest(Semaphore sem1){
+		if(head == null){
+			sem1.release();
+			return null;
+	}
+		
+		if(head.done == 1){
+			pop();
+		}
 		PCB temp = head;
 		int index = 1;
 		int minIndex = 1;
+		int current;
 		PCB minPCB = temp;
+		if (temp == null)
+			return null;
 		int minCPU = temp.CPUBurst[temp.cpuIndex];
 		while(temp != null){
-			int current = temp.CPUBurst[temp.cpuIndex];
+			current = temp.CPUBurst[temp.cpuIndex];
+			//System.out.println("Compare " + current + " with " + minCPU);
 			if(current < minCPU){
 				minIndex = index;
 				minCPU = current;
 				minPCB = temp;
 			}
+			//System.out.println(minCPU + " is smaller");
 			index++;
 			temp = temp.next;
 		}
-		removeElement(minIndex);
+		//System.out.println("END SESSION\n");
+		//System.out.println(minIndex + " " + (index-1));
+		removeElement(minIndex, (index-1));
 		
 		return minPCB;
 	}
@@ -125,7 +142,57 @@ public class DoubleLinkedList {
 			//System.out.println("Element not found: " + element);
 		
 	}
-	public void removeElement(int index){
+	public void removeElement(int minIndex, int index){
+		PCB temp = head;
+		PCB prior = temp;
+		int found =0;
+		//System.out.println("START");
+		for(int i = 0; i < index; i++){
+			
+			//temp = pop();
+			if((i+1) != minIndex){
+				prior = temp;
+				temp = temp.next;
+				//printList("during return");
+			}
+			else{
+				if(temp == head)
+					pop();
+				else if(temp == tail)
+					tail.prev.next = null;
+				else{
+					prior.next = temp.next;
+					temp.next.prev = prior;
+				}
+				//System.out.println("Returned " + temp.id);
+				found = 1;
+			}
+		}
+		//printList("After return");
+	}
+	
+	public PCB getShortest2(){
+		PCB temp = head;
+		int index = 1;
+		int minIndex = 1;
+		PCB minPCB = temp;
+		int minCPU = temp.CPUBurst[temp.cpuIndex];
+		while(temp != null){
+			int current = temp.CPUBurst[temp.cpuIndex];
+			if(current < minCPU){
+				minIndex = index;
+				minCPU = current;
+				minPCB = temp;
+			}
+			index++;
+			temp = temp.next;
+		}
+		removeElement2(minIndex);
+		
+		return minPCB;
+	}
+	
+	public void removeElement2(int index){
 		PCB temp;
 		int found =0;
 		for(int i = 0; i < index; i++){
@@ -138,11 +205,6 @@ public class DoubleLinkedList {
 				found = 1;
 			}
 		}
-		//if(found != 1)
-		//	System.out.println("element not found at index: " + index);
-				
-		
-		
 	}
 	
 	public void printList(String name){
@@ -177,27 +239,4 @@ public class DoubleLinkedList {
 		
 		System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
 	}
-	
-	private void setVars(PCB tmp){
-		
-	}
-	public void printList(String name, int num){
-		PCB tmp = head;
-		int counter = 1;
-		System.out.println("\t\t\t\t\t\t\t\t\t~~~~~~~~~~" + name + " LIST PRINTER~~~~~~~~~~");
-		while(tmp != null){
-			System.out.println("\t\t\t\t\t\t\t\t\t" + counter + ":\t" + tmp.id);
-			tmp = tmp.next;
-			counter++;
-		}
-		
-		System.out.println("\t\t\t\t\t\t\t\t\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-	}
-	
-	public void clear(){
-		if(size != 0)
-			pop();
-		pop();
-	}
-	
 }
