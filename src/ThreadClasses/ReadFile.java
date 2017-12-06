@@ -22,7 +22,6 @@ public class ReadFile extends Prog implements Runnable {
 	}
 	
 	public void read(){
-		//System.out.println("Hello");
 		String fileContents[];
 		String line = null;
 		try {
@@ -39,7 +38,6 @@ public class ReadFile extends Prog implements Runnable {
 			}
 			file_read_done = 1;
 			procNum = numberOfProccesses;
-			System.out.println("READ:\tREAD DONE");
 			
 			buffReader.close();
 			
@@ -50,17 +48,14 @@ public class ReadFile extends Prog implements Runnable {
 	
 	public void analyzeLine(String []line){
 		if(line[0].equals("proc")){
-			System.out.println("READ:\tproc detected");
 			numberOfProccesses++;
 			proc(line);
 			
 		}
-		else if(line[0].equals("sleep")){
-			System.out.println("READ:\tsleep detected");
+		else if(line[0].equals("sleep")){;
 			sleep(line);
 		}
 		else if(line[0].equals("stop")){
-			System.out.println("READ:\tstop detected");
 			throw new RuntimeException();
 		}
 		else
@@ -84,14 +79,15 @@ public class ReadFile extends Prog implements Runnable {
 		element.creationTime = System.currentTimeMillis();
 		element.rQueueInputTime = System.currentTimeMillis();
 		
-		//try {
-			//mutex1.acquire();
-			readyQueue.push(element);
-			//mutex1.release();
-			sem1.release();
-		//} catch (InterruptedException e) {e.printStackTrace();}
+		element.id = numberOfProccesses;
 		
-		System.out.println("READ:\tSem1 released\tsem1 size: " + sem1.availablePermits());
+		element.note = "in READ";
+		
+		readyQueue.push(element);
+		System.out.println("READ:\tpushed " + element.id);
+		//readyQueue.printList("READ ReadyQueue");
+		//ioQueue.printList("READ IOQueue");
+		sem1.release();
 	}
 	
 	private void sleep(String line[]){
@@ -126,5 +122,4 @@ public class ReadFile extends Prog implements Runnable {
 	public void run() {	
 		read();
 	}
-
 }

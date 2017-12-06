@@ -5,7 +5,7 @@ import os_assignment5.Prog;
 
 public class CPUScheduler extends Prog implements Runnable{
 	String alg;
-	PCB element;
+	
 	int counter;
 	int cpuBurstTime;
 	
@@ -14,18 +14,20 @@ public class CPUScheduler extends Prog implements Runnable{
 	long afterSleep;
 	
 	public CPUScheduler(){
-		
 		counter = 0;
-		alg = arguments[2];
-		element = null;
+		alg = algorithm;
+		
 	}
 	
+	//Runs infinite loop that executes the code associated with the set algorithm 
 	private void scheduler(){
 		while(true){
-
-			if(readyQueue.isEmpty() && ioQueue.isEmpty() && file_read_done == 1)
+			
+			if(readyQueue.isEmpty() && ioQueue.isEmpty2() && file_read_done == 1)
 				break;
-
+			if(allDone == procNum)
+				break;
+			
 			try {
 				if(alg.equals("FIFO")){
 					fifo();
@@ -42,42 +44,62 @@ public class CPUScheduler extends Prog implements Runnable{
 			} catch (InterruptedException e) {e.printStackTrace();}
 		}
 		cpu_sch_done = 1;
-		System.out.println("CPU:\tCPU DONE");
 	}
 	
+	//If algorithm is FIFO
 	private void fifo() throws InterruptedException{
+			PCB element;
 			sem1.acquire();
 			element = readyQueue.pop();
+			//System.out.println("CPU:\trecieved: " + element.id);
 			performCalculations(element);	
 	}
 	
+	//If algorithm is SJF
 	private void sjf() throws InterruptedException{
+		PCB element;
 			sem1.acquire();
 			element = readyQueue.getShortest();
 			performCalculations(element);	   
 	}
 	
+	//If algorithm is PR
 	private void pr() throws InterruptedException{
-	
+		PCB element;
 		sem1.acquire();
 		element = readyQueue.getPriority();
 		performCalculations(element);
 	}
 	
+	//If algorithm is RR
 	private void rr() throws InterruptedException{
-		int quantum = Integer.parseInt(arguments[4]);
-		int cpuBurstTime;
-		
+		PCB element;
 		sem1.acquire();
 		element = readyQueue.pop();
+		
+		//calculate time element spent in readyQueue
+		element.totalWaitingTime += System.currentTimeMillis() - element.rQueueInputTime;
+		
 		cpuBurstTime = element.CPUBurst[element.cpuIndex];
 		
 		if(cpuBurstTime < quantum){
+			beforeSleep = System.currentTimeMillis();
 			Thread.sleep(cpuBurstTime);
+			afterSleep = System.currentTimeMillis();
+			
+			//calculate the amount of time the thread slept
+			element.totalUtilization += afterSleep - beforeSleep;
+			
 			element.cpuIndex++;		
 		}
 		else{
+			beforeSleep = System.currentTimeMillis();
 			Thread.sleep(quantum);
+			afterSleep = System.currentTimeMillis();
+			
+			//calculate the amount of time the thread slept
+			element.totalUtilization += afterSleep - beforeSleep;
+			
 			cpuBurstTime -= quantum;
 			element.CPUBurst[element.cpuIndex] = cpuBurstTime;	
 		}
@@ -85,32 +107,7 @@ public class CPUScheduler extends Prog implements Runnable{
 		if(element.numCPUBurst > element.cpuIndex + 1){
 			mutex2.acquire();
 			ioQueue.push(element);
-			sem2.release();
-			mutex2.release();
-		}
-	}
-	
-	private void performCalculations(PCB element) throws InterruptedException{
-		//calculate time element spent in readyQueue
-		element.totalWaitingTime += System.currentTimeMillis() - element.rQueueInputTime;
-		
-		//getBurstime based on cpuBurst idex
-		cpuBurstTime = element.CPUBurst[element.cpuIndex];
-		
-		beforeSleep = System.currentTimeMillis();
-		Thread.sleep(cpuBurstTime);
-		afterSleep = System.currentTimeMillis();
-		
-		//calculate the amount of time the thread slept
-		element.totalUtilization += afterSleep - beforeSleep;
-		
-		//update index
-		element.cpuIndex++;
-		
-		//if last cpuBurst
-		if(element.numCPUBurst > element.cpuIndex+1){
-			mutex2.acquire();
-			ioQueue.push(element);
+			System.out.println("\tCPU: pushed " + element.id + " to IOQueue");
 			sem2.release();
 			
 			//update stats before disgarding the element
@@ -120,6 +117,50 @@ public class CPUScheduler extends Prog implements Runnable{
 			
 			mutex2.release();
 		}
+	}
+	
+	//Code used for FIFO, SJF, and PR
+	private void performCalculations(PCB element) throws InterruptedException{
+		//calculate time element spent in readyQueue
+		element.totalWaitingTime += System.currentTimeMillis() - element.rQueueInputTime;
+		
+		//getBurstime based on cpuBurst index
+		cpuBurstTime = element.CPUBurst[element.cpuIndex];
+		
+		beforeSleep = System.currentTimeMillis();
+		Thread.sleep(cpuBurstTime);
+		System.out.println("Slept " + cpuBurstTime);
+		afterSleep = System.currentTimeMillis();
+		
+		//calculate the amount of time the thread slept
+		element.totalUtilization += afterSleep - beforeSleep;
+		
+		//update index
+		element.cpuIndex = element.cpuIndex+1;
+		
+		//if last cpuBurst
+		
+		if(element.cpuIndex >= element.numCPUBurst){
+			//System.out.println("Marked " + element.id + " as done.");
+			element.done = 1;
+			allDone++;
+		}
+		else{
+
+			mutex2.acquire();
+			
+			ioQueue.push(element);
+			
+			sem2.release();
+			
+			//update stats before disgarding the element
+			totalUtilization += element.totalUtilization;
+			totalTurnaround += (System.currentTimeMillis() - element.creationTime);
+			totalWaitingTime += element.totalWaitingTime;
+			
+			mutex2.release();
+		}
+		
 	}
 
 	public void run() {

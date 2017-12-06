@@ -9,7 +9,6 @@ import ThreadClasses.ReadFile;
 public class Prog {
 	
 	public static MainHelper helper;
-	public static String[] arguments;
 	public static DoubleLinkedList ioQueue;
 	public static DoubleLinkedList readyQueue;
 	
@@ -24,14 +23,18 @@ public class Prog {
 	public static int io_sys_done;
 	
 	public static int procNum = 0;
+	public static int quantum;
+	public static String algorithm;
+	public static int ioWorking = 0;
+	public static int allDone = 0;
 	
 	public static long totalWaitingTime = 0;
 	public static int totalTurnaround = 0;
 	public static int totalUtilization = 0;
-
 	
 	public static void main(String[] args) {
 		
+		int quantumFlag = 0;
 		
 		helper = new MainHelper();
 		ioQueue = new DoubleLinkedList();
@@ -46,37 +49,44 @@ public class Prog {
 		cpu_sch_done = 0;
 		io_sys_done = 0;
 		
-		double startTime;
-		double endTime;
-		double totalTime = 0;
+		long startTime;
+		long endTime;
+		long totalTime = 0;
 		
-		double cpuUtilization = 0.0;
+		long cpuUtilization = 0;
 		double throughput = 0.0;
 		double avgTurnaroundTime = 0.0;
 		double avgWaitingTime = 0.0;
 		
+		String file;
 		
-		DecimalFormat numberFormat = new DecimalFormat("#.00");
-		/**
-		//Get argv from the console
-		Scanner scan = new Scanner(System.in);
-		String commandInput[];
-		System.out.println("Enter commands:");
-		String params = scan.nextLine();
-		commandInput = params.split(" ");
 		
-		for(String param: commandInput){
-			System.out.println(param);
+		//Take care of arguments
+		if(args[2].equals("-quantum")){
+			algorithm = args[1];
+			quantum = Integer.parseInt(args[3]);
+			file = args[5];
+			quantumFlag = 1;
 		}
-		**/
+		else{
+			algorithm = args[1];
+			file = args[3];
+		}
 		
-		//temp command line simulator
-		String commandArgs[] = {"prog", "-alg", "FIFO", "-quantum", "30", "-input", "input.txt"};
-		arguments = commandArgs;
-		
+		//error if quantum but no RR
+		if(quantumFlag == 1 && !algorithm.equals("RR") ){
+			System.out.println("Error. Cannot have quantum with algorithm " + algorithm + ".");
+			return;
+		}
+		//or RR but no quantum
+		if(quantumFlag == 0 && algorithm.equals("RR")){
+			System.out.println("Error. Round Robin must have quantum.");
+			return;
+		}
+			
 		
 		//Set up threads
-		ReadFile reader = new ReadFile(commandArgs[6]);
+		ReadFile reader = new ReadFile(file);
 		Thread t1 = new Thread(reader);
 		
 		CPUScheduler cpu = new CPUScheduler();
@@ -100,9 +110,8 @@ public class Prog {
 			t3.join();
 			System.out.println("3 joined");
 			
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
+		} catch (InterruptedException e) {e.printStackTrace();}
+		
 		//get total time
 		endTime = System.currentTimeMillis();
 		totalTime = endTime - startTime;
@@ -118,8 +127,7 @@ public class Prog {
 	
 		//get Avg. Waiting Time
 		avgWaitingTime = (double)totalWaitingTime/procNum;
-		
 
-		helper.printStats(commandArgs[6], arguments[2], cpuUtilization, throughput, avgTurnaroundTime, avgWaitingTime);
+		helper.printStats(file, algorithm, cpuUtilization, throughput, avgTurnaroundTime, avgWaitingTime);
 	}
 }

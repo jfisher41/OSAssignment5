@@ -18,6 +18,11 @@ public class PCB {
 	
 	public long creationTime;
 	
+	public int id;
+	public int done = 0;
+	
+	public String note;
+	
 	
 	
 	

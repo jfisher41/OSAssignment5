@@ -2,43 +2,44 @@ package os_assignment5;
 
 import java.text.DecimalFormat;
 
-public class MainHelper {
+public class MainHelper extends Prog{
 	//DoubleLinkedList list = new DoubleLinkedList();
 	
 	//Prints the output for the program
-	public void printStats(String fileName, String algorithm, double utilization, double throughput, double turnaround, double waiting){
+	public void printStats(String fileName, String algorithm, long utilization, double throughput, double turnaround, double waiting){
 		DecimalFormat numberFormat = new DecimalFormat("0.000");
-		double stats [] = new double[4];
-		String printout[] = new String[6];
+		double doubles [] = new double[3];
+		String printout[] = new String[7];
 		
 		printout[0] = fileName;
 		printout[1] = algorithm;
+		printout[3] = Long.toString(utilization);
 		
-		int index = 2;
+		int index = 4;
 		
-		stats[0] = utilization;
-		stats[1] = throughput;
-		stats[2] = turnaround;
-		stats[3] = waiting;
+		doubles[0] = throughput;
+		doubles[1] = turnaround;
+		doubles[2] = waiting;
 		
-		for(double stat : stats){
-			if(stat == 0.0)
-				printout[index] = "....";
-			else
-				printout[index] = numberFormat.format(stat);
-			
+		for(double stat : doubles){
+			printout[index] = numberFormat.format(stat);
 			index++;
 		}
 		
+		if(quantum != 0)
+			printout[2] = "(" + Integer.toString(quantum) + ")";
+		else
+			printout[2] = "";
+		
 		System.out.printf("---------------------------------------\n"
 				+ "Input File Name\t\t\t: %s\n"
-				+ "CPU Scheduling Alg\t\t: %s\n"
+				+ "CPU Scheduling Alg\t\t: %s %s\n"
 				+ "CPU Utilization\t\t\t: %s\n"
 				+ "Throughput\t\t\t: %s\n"
 				+ "Avg. Turaround Time\t\t: %s\n"
 				+ "Avg. Waiting Time in R Queue\t: %s\n"
 				+ "---------------------------------------",
-				printout[0], printout[1], printout[2], printout[3], printout[4], printout[5]);
+				printout[0], printout[1], printout[2], printout[3], printout[4], printout[5], printout[6]);
 	}
 	
 	/**
