@@ -1,6 +1,5 @@
 package os_assignment5;
 
-import java.text.DecimalFormat;
 import java.util.concurrent.Semaphore;
 import ThreadClasses.CPUScheduler;
 import ThreadClasses.IOSystem;
@@ -8,7 +7,7 @@ import ThreadClasses.ReadFile;
 
 public class Prog {
 	
-	public static MainHelper helper;
+	public static Printer printer;
 	public static DoubleLinkedList ioQueue;
 	public static DoubleLinkedList readyQueue;
 	
@@ -25,7 +24,6 @@ public class Prog {
 	public static int procNum = 0;
 	public static int quantum;
 	public static String algorithm;
-	public static int ioWorking = 0;
 	public static int allDone = 0;
 	
 	public static long totalWaitingTime = 0;
@@ -36,7 +34,7 @@ public class Prog {
 		
 		int quantumFlag = 0;
 		
-		helper = new MainHelper();
+		printer = new Printer();
 		ioQueue = new DoubleLinkedList();
 		readyQueue = new DoubleLinkedList();
 		
@@ -59,7 +57,6 @@ public class Prog {
 		double avgWaitingTime = 0.0;
 		
 		String file;
-		
 		
 		//Take care of arguments
 		if(args[2].equals("-quantum")){
@@ -97,18 +94,16 @@ public class Prog {
 		
 		startTime = System.currentTimeMillis();
 		try {
-		//start the threads
+			//start the threads
 			t1.start();
 			t1.join();
 			t2.start();
 			t3.start();
 		
+			//join all the threads
 			t1.join();
-			System.out.println("1 joined");
 			t2.join();
-			System.out.println("2 joined");
 			t3.join();
-			System.out.println("3 joined");
 			
 		} catch (InterruptedException e) {e.printStackTrace();}
 		
@@ -128,6 +123,6 @@ public class Prog {
 		//get Avg. Waiting Time
 		avgWaitingTime = (double)totalWaitingTime/procNum;
 
-		helper.printStats(file, algorithm, cpuUtilization, throughput, avgTurnaroundTime, avgWaitingTime);
+		printer.printStats(file, algorithm, cpuUtilization, throughput, avgTurnaroundTime, avgWaitingTime);
 	}
 }

@@ -2,23 +2,17 @@ package ThreadClasses;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
-
-import os_assignment5.DoubleLinkedList;
-import os_assignment5.MainHelper;
 import os_assignment5.PCB;
 import os_assignment5.Prog;
 
 
 public class ReadFile extends Prog implements Runnable {
 	String fileName;
-	DoubleLinkedList list;
-	PCB queue[];
 	int numberOfProccesses;
 	
 	public ReadFile(String fileName){
 		this.fileName = fileName;
 		numberOfProccesses = 0;
-
 	}
 	
 	public void read(){
@@ -50,7 +44,6 @@ public class ReadFile extends Prog implements Runnable {
 		if(line[0].equals("proc")){
 			numberOfProccesses++;
 			proc(line);
-			
 		}
 		else if(line[0].equals("sleep")){;
 			sleep(line);
@@ -82,7 +75,6 @@ public class ReadFile extends Prog implements Runnable {
 		element.id = numberOfProccesses;
 		
 		readyQueue.push(element);
-		System.out.println("READ:\tpushed " + element.id);
 		sem1.release();
 	}
 	

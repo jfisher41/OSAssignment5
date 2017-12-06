@@ -4,7 +4,7 @@ import os_assignment5.PCB;
 import os_assignment5.Prog;
 
 public class IOSystem extends Prog implements Runnable {
-	static int flag = 0;
+	
 	private void ioSystem(){
 		PCB element = null;
 		
@@ -12,28 +12,24 @@ public class IOSystem extends Prog implements Runnable {
 			if(cpu_sch_done == 1){
 				break;
 			}
-			
 			try {
-				
 				while(!sem2.tryAcquire() && cpu_sch_done != 1);
 
 				element = ioQueue.pop();
-				System.out.println("IO:\trecieved " + element.id);
+
 				if(element.done != 1){
 					if(element.numIOBurst > element.ioIndex){
 						Thread.sleep(element.IOBurst[element.ioIndex]);
 						element.ioIndex++;
 					}
+					
 					mutex1.acquire();
-				
 					element.rQueueInputTime = System.currentTimeMillis();
 					readyQueue.push(element);
-					System.out.println("IO:\tpushed " + element.id);
 					sem1.release();
 					mutex1.release();
 				}
 				else{
-					System.out.println("here");
 					sem2.release();
 				}
 
